@@ -81,13 +81,14 @@
 
             <div class="content" id="app">
                 <div class="title m-b-md">
-                    Tic Tac Toe
+                    @auth
+                        <a href="{{ url('/home') }}">Home</a>
+                    @else
+                        Please log in to play
+                    @endauth
                 </div>
-                <tic-tac-toe></tic-tac-toe>
 
             </div>
         </div>
-
-        <script src="{{ asset('/js/app.js') }}"></script>
     </body>
 </html>
