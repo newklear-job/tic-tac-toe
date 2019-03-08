@@ -11,10 +11,24 @@
 |
 */
 
-Broadcast::channel('App.User.{id}', function ($user, $id) {
+Broadcast::channel('App.UserEvent.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('messages', function() {
-    return true;
+
+Broadcast::channel('user.{userId}', function ($user, $userId) {
+    if(Auth::id() === (int)$userId) {
+        return ['id' => $user->id, 'name' => $user->name];
+    }
+    else {
+        return false;
+    }
+});
+
+Broadcast::channel('message.{roomId}', function ($user, $roomId) {
+    return ['id' => $user->id, 'name' => $user->name];
+});
+
+Broadcast::channel('lobby', function ($user) {
+    return ['id' => $user->id, 'name' => $user->name];
 });

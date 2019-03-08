@@ -29,5 +29,5 @@ Vue.component('tic-tac-toe', require('./components/TicTacToe.vue').default);
  */
 
 const app = new Vue({
-    el: '#app'
+    el: '#vueApp'
 });

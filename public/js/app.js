@@ -1784,11 +1784,51 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       messages: [],
-      message: ''
+      message: '',
+      roomId: '0-1',
+      users: [],
+      userId: undefined,
+      chatMessages: [],
+      chatMessage: ''
     };
   },
   methods: {
@@ -1796,19 +1836,67 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       axios.post('/message', {
-        message: "dsa"
+        message: this.message,
+        'room_id': this.roomId
       }).then(function (response) {
         _this.message = '';
-        console.log('axios.then');
-        console.log(response);
       });
+    },
+    sendChat: function sendChat() {
+      var _this2 = this;
+
+      axios.post('/chatMessage', {
+        message: this.chatMessage
+      }).then(function (response) {
+        console.log(_this2.chatMessage);
+
+        _this2.chatMessages.push({
+          'message': _this2.chatMessage,
+          'user': 'Me'
+        });
+
+        _this2.chatMessage = '';
+      });
+    },
+    sendUser: function sendUser(user) {
+      //console.log(user.id + ' - ' + user.name);
+      axios.post('/userMessage', {
+        message: 'go party!!!',
+        toUser: user.id
+      }).then(function (response) {});
+    },
+    removeFromArray: function removeFromArray(array, value) {
+      var index = array.indexOf(value);
+      array.splice(index, 1);
     }
   },
   mounted: function mounted() {
-    var _this2 = this;
+    var _this3 = this;
 
-    Echo.channel('messages').listen('.newMessage', function (message) {
-      _this2.messages.push(message);
+    // Lobby chat listen
+    Echo.join('lobby').here(function (users) {
+      _this3.users = users;
+    }).joining(function (user) {
+      // console.log(user)
+      _this3.users.push(user);
+    }).leaving(function (user) {
+      _this3.removeFromArray(_this3.users, user);
+    }).listen('.newMessage', function (e) {
+      _this3.chatMessages.push(e);
+    }); //Private game chat listen
+
+    Echo.join("message.".concat(this.roomId)).here(function (users) {// console.log(users);
+    }).joining(function (user) {// console.log(`joined ${user.name}`);
+    }).leaving(function (user) {// console.log(`leaved ${user.name}`);
+    }).listen('.newMessage', function (e) {
+      _this3.messages.push(e);
+    }); // Get UserEvent Id + UserEvent chat listen
+
+    axios.get('/getUserId').then(function (response) {
+      _this3.userId = response.data;
+      Echo.private("user.".concat(_this3.userId)).listen('.newMessage', function (e) {
+        console.log(e);
+      });
     });
   }
 });
@@ -47006,58 +47094,163 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
-        _c("div", { staticClass: "panel panel-default" }, [
-          _c("div", { staticClass: "panel-heading" }, [_vm._v("Example Chat")]),
+  return _c("div", [
+    _c("div", { staticClass: "left float-left online-users" }, [
+      _c("p", [_vm._v("This users are online: ")]),
+      _vm._v(" "),
+      _c(
+        "ul",
+        _vm._l(_vm.users, function(user) {
+          return _c("li", [
+            _vm._v(_vm._s(user) + " "),
+            _vm.userId != user.id
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-warning",
+                    on: {
+                      click: function($event) {
+                        return _vm.sendUser(user)
+                      }
+                    }
+                  },
+                  [_vm._v("Send!")]
+                )
+              : _vm._e()
+          ])
+        }),
+        0
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "right float-right" }, [
+      _c("div", { staticClass: "panel panel-default" }, [
+        _c("div", { staticClass: "panel-heading" }, [_vm._v("Example Chat")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "panel-body" }, [
+          _c(
+            "ul",
+            _vm._l(_vm.chatMessages, function(item) {
+              return _c("li", [
+                _vm._v(_vm._s(item.message) + " - "),
+                _c("i", [_vm._v(_vm._s(item.user))])
+              ])
+            }),
+            0
+          ),
           _vm._v(" "),
-          _c("div", { staticClass: "panel-body" }, [
-            _c(
-              "ul",
-              _vm._l(_vm.messages, function(item) {
-                return _c("li", [
-                  _vm._v(_vm._s(item.message) + " - "),
-                  _c("i", [_vm._v(_vm._s(item.user))])
-                ])
-              }),
-              0
-            ),
-            _vm._v(" "),
-            _c("input", {
-              directives: [
-                {
-                  name: "model",
-                  rawName: "v-model",
-                  value: _vm.message,
-                  expression: "message"
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.chatMessage,
+                expression: "chatMessage"
+              }
+            ],
+            attrs: { type: "text" },
+            domProps: { value: _vm.chatMessage },
+            on: {
+              keyup: function($event) {
+                if (
+                  !$event.type.indexOf("key") &&
+                  _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+                ) {
+                  return null
                 }
-              ],
-              attrs: { type: "text" },
-              domProps: { value: _vm.message },
+                return _vm.sendChat()
+              },
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.chatMessage = $event.target.value
+              }
+            }
+          }),
+          _c("br"),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-success",
               on: {
-                input: function($event) {
-                  if ($event.target.composing) {
-                    return
-                  }
-                  _vm.message = $event.target.value
+                click: function($event) {
+                  return _vm.sendChat()
                 }
               }
-            }),
-            _c("br"),
+            },
+            [_vm._v("Send!")]
+          )
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "container" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col-md-10 offset-md-1" }, [
+          _c("div", { staticClass: "card" }, [
+            _c("div", { staticClass: "card-header" }, [
+              _vm._v("Tic Tac Toe, User ID - " + _vm._s(_vm.userId))
+            ]),
             _vm._v(" "),
-            _c(
-              "button",
-              {
-                staticClass: "btn btn-success",
-                on: {
-                  click: function($event) {
-                    return _vm.send()
-                  }
-                }
-              },
-              [_vm._v("Send!")]
-            )
+            _c("div", { staticClass: "card-body" }, [
+              _c("div", { staticClass: "col-md-8 col-md-offset-2" }, [
+                _c("div", { staticClass: "panel panel-default" }, [
+                  _c("div", { staticClass: "panel-heading" }, [
+                    _vm._v("Example Chat")
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "panel-body" }, [
+                    _c(
+                      "ul",
+                      _vm._l(_vm.messages, function(item) {
+                        return _c("li", [
+                          _vm._v(_vm._s(item.message) + " - "),
+                          _c("i", [_vm._v(_vm._s(item.user))])
+                        ])
+                      }),
+                      0
+                    ),
+                    _vm._v(" "),
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.message,
+                          expression: "message"
+                        }
+                      ],
+                      attrs: { type: "text" },
+                      domProps: { value: _vm.message },
+                      on: {
+                        input: function($event) {
+                          if ($event.target.composing) {
+                            return
+                          }
+                          _vm.message = $event.target.value
+                        }
+                      }
+                    }),
+                    _c("br"),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-success",
+                        on: {
+                          click: function($event) {
+                            return _vm.send()
+                          }
+                        }
+                      },
+                      [_vm._v("Send!")]
+                    )
+                  ])
+                ])
+              ])
+            ])
           ])
         ])
       ])
@@ -59208,7 +59401,7 @@ Vue.component('tic-tac-toe', __webpack_require__(/*! ./components/TicTacToe.vue 
  */
 
 var app = new Vue({
-  el: '#app'
+  el: '#vueApp'
 });
 
 /***/ }),

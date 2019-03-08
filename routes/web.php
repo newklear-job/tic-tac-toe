@@ -21,3 +21,9 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::post('/message', 'StepController@post');
 
+Route::get('/getUserId', function(){
+    return Auth::id();
+});
+
+Route::post('/chatMessage', 'LobbyController@chatMessage');
+Route::post('/userMessage', 'LobbyController@userMessage');

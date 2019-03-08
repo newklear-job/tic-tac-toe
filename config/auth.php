@@ -50,7 +50,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | User Providers
+    | UserEvent Providers
     |--------------------------------------------------------------------------
     |
     | All authentication drivers have a user provider. This defines how the

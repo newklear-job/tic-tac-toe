@@ -11,19 +11,19 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Debugbar;
-class NewStep implements ShouldBroadcast
+
+class Lobby implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     protected $user;
     protected $message;
-    protected $room_id;
 
-    public function __construct(User $user, $message, $room_id)
+    public function __construct(User $user, $message)
     {
         $this->user = $user;
         $this->message = $message;
-        $this->room_id = $room_id;
+        $this->dontBroadcastToCurrentUser();
     }
 
     public function broadcastWith()
@@ -42,6 +42,6 @@ class NewStep implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new PresenceChannel('message.'.$this->room_id);
+        return new PresenceChannel('lobby');
     }
 }
