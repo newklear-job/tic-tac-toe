@@ -27,7 +27,7 @@ Vue.component('tic-tac-toe', require('./components/TicTacToe.vue').default);
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
-
+Vue.use(require('vue-moment'));
 const app = new Vue({
     el: '#vueApp'
 });
