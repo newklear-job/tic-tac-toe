@@ -15,7 +15,6 @@ class StepController extends Controller
 
     public function post(Request $request)
     {
-        Debugbar::info("1");
         event(new NewStep(Auth::user(), $request->get('message'), $request->get('room_id')));
     }
 }

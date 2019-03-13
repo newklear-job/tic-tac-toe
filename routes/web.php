@@ -19,7 +19,7 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::post('/message', 'StepController@post');
+Route::post('/stepMessage', 'StepController@post');
 
 Route::get('/getUserId', function(){
     return Auth::id();

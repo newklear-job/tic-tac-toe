@@ -24,6 +24,7 @@ class NewStep implements ShouldBroadcast
         $this->user = $user;
         $this->message = $message;
         $this->room_id = $room_id;
+        $this->dontBroadcastToCurrentUser();
     }
 
     public function broadcastWith()
